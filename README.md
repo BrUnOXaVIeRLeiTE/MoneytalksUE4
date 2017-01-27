@@ -112,7 +112,10 @@ void AMyPlayerState::Tick(float DeltaTime)
 ```
 
 Results:
-![](http://i1234.photobucket.com/albums/ff408/BrUnOXaVIeR/UE4FDecimal_zps6j5snhqm.gif "")
+![_][result]
+
+
+[result]: http://i1234.photobucket.com/albums/ff408/BrUnOXaVIeR/UE4FDecimal_zps6j5snhqm.gif "results"
 
 
 ----------
