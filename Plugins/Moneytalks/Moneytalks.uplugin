@@ -1,0 +1,37 @@
+{
+	"FileVersion": 1,
+	"Version": 1,
+	"VersionName": "1.0.0",
+	"EngineVersion" : "4.14.0",
+	"FriendlyName": "??",
+	"Description": "??",
+	"Category": "SYNAPTECH",
+	"CreatedBy": "(C) Bruno Xavier Leite",
+	"CreatedByURL": "http://brunoxavierleite.com",
+	"DocsURL": "http://brunoxavierleite.com",
+	"MarketplaceURL": "??",
+	"SupportURL": "mailto:bruno_xavier_@msn.com",
+	"CanContainContent": true,
+	"EnabledByDefault": true,
+	"IsBetaVersion": false,
+	"Installed": true,
+	"Modules": [
+		{
+			"Name": "Moneytalks",
+			"Type": "Runtime",
+			"LoadingPhase": "PreDefault",
+			"WhitelistPlatforms": [
+				"Win64",
+				"Win32"
+			]
+		},
+		{
+			"Name": "EdMoneytalks",
+			"Type": "Editor",
+			"LoadingPhase": "PostEngineInit",
+			"WhitelistPlatforms": [
+				"Win64"
+			]
+		}
+	]
+}
