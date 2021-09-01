@@ -1,33 +1,32 @@
 {
-	"FileVersion": 1,
 	"Version": 1,
+	"FileVersion": 1,
 	"VersionName": "1.0.0",
-	"EngineVersion" : "4.14.0",
-	"FriendlyName": "??",
-	"Description": "??",
 	"Category": "SYNAPTECH",
+	"EngineVersion": "4.27.0",
+	"FriendlyName": "Moneytalks",
 	"CreatedBy": "(C) Bruno Xavier Leite",
-	"CreatedByURL": "http://brunoxavierleite.com",
 	"DocsURL": "http://brunoxavierleite.com",
-	"MarketplaceURL": "??",
 	"SupportURL": "mailto:bruno_xavier_@msn.com",
+	"CreatedByURL": "http://brunoxavierleite.com",
+	"MarketplaceURL": "com.epicgames.launcher://ue/marketplace/content/cfe09a9b313a457780f65ab6e846497c",
+	"Description": "A library, that implements Intel's Decimal, type to be used both from C++ and Blueprint graphs.",
 	"CanContainContent": true,
 	"EnabledByDefault": true,
 	"IsBetaVersion": false,
 	"Installed": true,
 	"Modules": [
 		{
-			"Name": "Moneytalks",
 			"Type": "Runtime",
+			"Name": "Moneytalks",
 			"LoadingPhase": "PreDefault",
 			"WhitelistPlatforms": [
-				"Win64",
-				"Win32"
+				"Win64"
 			]
 		},
 		{
-			"Name": "EdMoneytalks",
 			"Type": "Editor",
+			"Name": "EdMoneytalks",
 			"LoadingPhase": "PostEngineInit",
 			"WhitelistPlatforms": [
 				"Win64"

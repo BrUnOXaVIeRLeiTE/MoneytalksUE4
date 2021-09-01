@@ -3,10 +3,10 @@
 
 
      ==================================================================
-     ======= Intel(R) Decimal Floating-Point Math Library v2.1 ========
+     ======= Intel(R) Decimal Floating-Point Math Library v2.2 ========
      ==================================================================
 
-                                                        August 15, 2011
+                                                         June 8, 2018
 
 
      ******************************************************************
@@ -22,14 +22,17 @@
                    'Extension for the programming language C to support 
                    decimal floating-point arithmetic'
         Aug 2011 - Version 2.0 Update 1 - fixed a small issue in fma128
-
+        Jun 2018 - Version 2.0 Update 2 - fixed issues in powd64, 
+                   acos64, and acos128. Added the llround, llquantexp, 
+                   and quantum functions, as well as corresponding new tests.
+		   This version has been tested in Linux, Windows, OSX, and Solaris.
 
   1. INTRODUCTION
   ===============
 
-  This package contains the release 2.0 of the Intel(R) Decimal
+  This package contains the release 2.0 Update 2(or V2.2) of the Intel(R) Decimal
 Floating-Point Math Library, conforming to the IEEE Standard 754-2008 for
-Floating-Point Arithmetic. This is an extension of Release 1.0 of 2009.
+Floating-Point Arithmetic. This is an extension of Release 2.0 Update 1 (or V2.1) of 2011.
 
   The library implements the functions defined for decimal floating-point
 arithmetic operations in the IEEE Standard 754-2008 for Floating-Point
@@ -43,20 +46,24 @@ encoding format for decimal floating-point values, but the decimal encoding
 format is supported too in the library, by means of conversion functions
 between the two encoding formats.
 
-  Release 2.0 of the library contained in this package implements all
+  Release 2.2 of the library contained in this package implements all
 the operations mandated by the IEEE Standard 754-2008. Alternate exception
 handling (not a mandatory feature) is not supported currently in the library,
 but the design facilitates adding it in the future. It is worth noting that
 several useful functions (not part of the IEEE 754-2008 definition) are
-provided in LIBRARY/bid_round.c. They can be used to round a q-digit decimal
+provided in LIBRARY/src/bid_round.c. They can be used to round a q-digit decimal
 integer number represented in binary to q - x digits (1 <= x <= q - 1).
 
   For operations involving integer operands or results, the library supports
 signed and unsigned 8-, 16-, 32-, and 64-bit integers.
 
-  Release 2.0 adds transcendental functions (supported in 128-bit, 64-bit, 
+Note: Release 2.0 added transcendental functions (supported in 128-bit, 64-bit, 
 and 32-bit decimal formats), including the ones specified in the technical 
 report on decimal arithmetic ISO/IEC TR 24732 (available from www.iso.org).
+These functions are not correctly rounded, a fact that should be considered 
+when using them (similary, binary floating-point mathematical functions 
+implemented for example in C or other compiler math libraries are in general
+not correctly rounded either). 
 
 
   2. PACKAGE CONTENTS
@@ -109,7 +116,7 @@ compilers with various requirements, even where default modes and no flag
 tests can be assumed, as in C99 FENV_ACCESS OFF.
 
   Three build options are provided, that can be set by editing
-LIBRARY/bid_conf.h, or (more conveniently) can be set on the compile
+LIBRARY/src/bid_conf.h, or (more conveniently) can be set on the compile
 command line.
 
   (a) Function arguments and return values can be passed by reference if
@@ -174,8 +181,8 @@ decimal operations will not change the inexact binary status flag.
   5. FUNCTION PROTOTYPES
   ======================
 
-  Function prototypes are provided in LIBRARY/bid_functions.h (starting at
-line 396 if parameters are passed by reference, and at line 2981 if they
+  Function prototypes are provided in LIBRARY/src/bid_functions.h (starting at
+line 396 if parameters are passed by reference, and at line 2994 if they
 are passed by value).
 
 
@@ -195,18 +202,11 @@ lead to incorrect results in the Intel(r) Decimal Floating-Point Math Library.
 For example, results of round-to-integer functions are incorrect when the 
 library is built using gcc 4.2/4.3. Also, some gcc versions in an IA-32 
 Linux environment cause slightly incorrect results in a few corner cases for 
-the 64-bit decimal square root. (This is not an exhaustive list.)
+the 64-bit decimal square root. (This is not an exhaustive list.) Such errors
+should be caught by the tests provided with the library.
 
 
-
-  7. CHANGES SINCE THE V1.0 UPDATE 1 RELEASE
-  ==========================================
-
-  Support was added for decimal transcendental functions (see Section 11 
-for details).  A small number of non-critical bugs were fixed.
-
-
-  8. USAGE EXAMPLES
+  7. USAGE EXAMPLES
   =================
 
   Eight usage examples are given in the EXAMPLES subdirectory, which illustrate
@@ -223,12 +223,12 @@ DECIMAL_GLOBAL_EXCEPTION_FLAGS would have to be properly defined not only when
 building the library, but also for the application calling the library
 functions):
 
-        #include "../LIBRARY/bid_conf.h"
-        #include "../LIBRARY/bid_functions.h"
+        #include "../LIBRARY/src/bid_conf.h"
+        #include "../LIBRARY/src/bid_functions.h"
 
 Such an example is represented by the readtest program in TESTS/readtest.c.
 
-  9. DECIMAL AND BINARY STATUS FLAGS
+  8. DECIMAL AND BINARY STATUS FLAGS
   ==================================
 
   The IEEE Standard 754-2008 specifies distinct rounding modes for binary
@@ -246,7 +246,7 @@ functions, uncomment the following line in bid_conf.h
 prior to building the library:
         // #define UNCHANGED_BINARY_STATUS_FLAGS
 
-  10. MAPPING OF IEEE 754-2008 NAMES TO INTEL (R) DECIMAL FLOATING-POINT MATH
+  9. MAPPING OF IEEE 754-2008 NAMES TO INTEL (R) DECIMAL FLOATING-POINT MATH
                           LIBRARY FUNCTION NAMES
   =========================================================================
 
@@ -802,19 +802,20 @@ setDecimalRoundingDirection         _IDEC_round
                                            __bid_setDecimalRoundingDirection
 
 
-  11. DESCRIPTION OF THE INTEL(R) DECIMAL FP MATH LIBRARY FUNCTIONS
+  10. DESCRIPTION OF THE INTEL(R) DECIMAL FP MATH LIBRARY FUNCTIONS
 
 This section gives brief descriptions of the functions available in the
-Intel(R) Decimal Floating-Point Math Library v2.0. The prototypes are
-shown assuming all arguments are passed by value, the rounding mode variable is
-passed as an argument to each function that requires it, a pointer to a
+Intel(R) Decimal Floating-Point Math Library v2.2. The prototypes are
+shown assuming all arguments are passed by value; the rounding mode variable is
+passed as an argument to each function that requires it; a pointer to a
 variable containing the status flags is passed to each function that requires
-it, and alternate exception handling is not supported. The function prototypes
+it; alternate exception handling is not supported. The function prototypes
 for other variants allowed for building the library can be determined from
 header files bid_functions.h and bid_conf.h, which contain also all the type
 definitions used in the following description, as well as the possible values of
 the rounding mode variable rnd_mode and the positions of the individual status
 flags in the status word *pfpsf.
+
 Notes:
  1. Three decimal floating-point formats are supported, as defined in
     IEEE Standard 754-2008: 32-bit, 64-bit, and 128-bit.
@@ -860,7 +861,7 @@ Notes:
     division by zero and invalid operation are denoted by P, U, O, Z, I
     respectively
 
-Note that function names can be changed by editing #define statements in
+Note that the function names can be changed by editing #define statements in
 bid_conf.h.
 
 ===============================================================================
@@ -3100,7 +3101,7 @@ PROTOTYPE:
     UINT128 x);
 FLOATING-POINT EXCEPTIONS: none
 
-FUNCTION: sameQuantum(x, y) is true if the exponents of x and y are the same,
+FUNCTION: sameQuantum(x, y) returns true if the exponents of x and y are the same,
   and false otherwise; sameQuantum(NaN, NaN) and sameQuantum(inf, inf) are
   true; if exactly one operand is infinite or exactly one operand is NaN,
   sameQuantum is false
@@ -3673,6 +3674,9 @@ _Decimal128 nexttowardd128(_Decimal128 x, _Decimal128 y);  // library name: __bi
 _Decimal64 fdimd64(_Decimal64 x, _Decimal64 y);  // library name: __bid64_fdim
 _Decimal32 fdimd32(_Decimal32 x, _Decimal32 y);  // library name: __bid32_fdim
 _Decimal128 fdimd128(_Decimal128 x, _Decimal128 y);  // library name: __bid128_fdim
+int samequantumd64 (_Decimal64 __x, _Decimal64 __y); // library name: __bid64_sameQuantum
+int samequantumd32 (_Decimal32 __x, _Decimal32 __y); // library name: __bid32_sameQuantum
+int samequantumd128 (_Decimal128 __x, _Decimal128 __y); // library name: __bid128_sameQuantum
 
 
 Calling Transcendental Functions
@@ -3764,7 +3768,7 @@ Note 1:
 =======
   Functions operating on the BID32 format are implemented, but some are not 
   listed here (for example bid32_add). See the prototypes in 
-  LIBRARY/bid_functions.h for a complete list of the library functions.
+  LIBRARY/src/bid_functions.h for a complete list of the library functions.
 
 Note 2:
 =======

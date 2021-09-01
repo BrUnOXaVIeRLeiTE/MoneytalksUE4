@@ -1,23 +1,24 @@
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////
-//		Copyright 2016 (C) Bruno Xavier B. Leite			//
+//		Copyright 2021 (C) Bruno Xavier B. Leite
 //////////////////////////////////////////////////////////////
-/*
-	BY EXECUTING, READING, EDITING, COPYING OR KEEPING FILES FROM THIS SOFTWARE SOURCE CODE,
-	YOU AGREE TO THE FOLLOWING TERMS IN ADDITION TO EPIC GAMES MARKETPLACE EULA:
-	- YOU HAVE READ AND AGREE TO EPIC GAMES TERMS: https://publish.unrealengine.com/faq
-	- YOU AGREE DEVELOPER RESERVES ALL RIGHTS TO THE SOFTWARE PROVIDED, GRANTED BY LAW.
-	- YOU AGREE YOU'LL NOT CREATE OR PUBLISH DERIVATIVE SOFTWARE TO THE MARKETPLACE.
-	- YOU AGREE DEVELOPER WILL NOT PROVIDE SOFTWARE OUTSIDE MARKETPLACE ENVIRONMENT.
-	- YOU AGREE DEVELOPER WILL NOT PROVIDE PAID OR EXCLUSIVE SUPPORT SERVICES.
-	- YOU AGREE DEVELOPER PROVIDED SUPPORT CHANNELS, ARE UNDER HIS SOLE DISCRETION.
-*/
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-#include "MoneytalksPrivatePCH.h"
 #include "DECLibrary.h"
+#include "Moneytalks_Shared.h"
 
-FDecimal UDECLibrary::MakeLiteralDecimal(int32 Value) {
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+FDecimal UDECLibrary::MakeDecimal_Int32(int32 Value) {
+	FDecimal D(Value); return D;
+}
+
+FDecimal UDECLibrary::MakeDecimal_Int64(int64 Value) {
+	FDecimal D(Value); return D;
+}
+
+FDecimal UDECLibrary::MakeDecimal_String(FString Value) {
 	FDecimal D(Value); return D;
 }
 
@@ -112,10 +113,16 @@ FDecimal UDECLibrary::DEC_GetDecimalMinusEqualDEC(UPARAM(ref)FDecimal &DEC, UPAR
 	*&DEC = (*&DEC -= *&D); return *&DEC;
 }
 
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 /// FDecimal -> Conversions
 
 int32 UDECLibrary::DEC_DecimalToInt(UPARAM(ref)FDecimal &DEC) {
 	return DEC.ToInt32();
+}
+
+int64 UDECLibrary::DEC_DecimalToInt64(FDecimal &DEC) {
+	return DEC.ToInt64();
 }
 
 float UDECLibrary::DEC_DecimalToFloat(UPARAM(ref)FDecimal &DEC) {

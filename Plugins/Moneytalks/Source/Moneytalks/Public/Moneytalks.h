@@ -1,18 +1,9 @@
 ﻿/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////
-//		Copyright 2016 (C) Bruno Xavier B. Leite			//
+//		Copyright 2021 (C) Bruno Xavier B. Leite
 //////////////////////////////////////////////////////////////
-/*
-	BY EXECUTING, READING, EDITING, COPYING OR KEEPING FILES FROM THIS SOFTWARE SOURCE CODE,
-	YOU AGREE TO THE FOLLOWING TERMS IN ADDITION TO EPIC GAMES MARKETPLACE EULA:
-	- YOU HAVE READ AND AGREE TO EPIC GAMES TERMS: https://publish.unrealengine.com/faq
-	- YOU AGREE DEVELOPER RESERVES ALL RIGHTS TO THE SOFTWARE PROVIDED, GRANTED BY LAW.
-	- YOU AGREE YOU'LL NOT CREATE OR PUBLISH DERIVATIVE SOFTWARE TO THE MARKETPLACE.
-	- YOU AGREE DEVELOPER WILL NOT PROVIDE SOFTWARE OUTSIDE MARKETPLACE ENVIRONMENT.
-	- YOU AGREE DEVELOPER WILL NOT PROVIDE PAID OR EXCLUSIVE SUPPORT SERVICES.
-	- YOU AGREE DEVELOPER PROVIDED SUPPORT CHANNELS, ARE UNDER HIS SOLE DISCRETION.
-*/
+
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 #ifndef __DECIMAL
@@ -27,6 +18,16 @@
 	#define LX "%Lx"
   #endif
 #endif
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+extern "C" {
+	#include "IntelRDFPMathLib/bid_conf.h"
+	#include "IntelRDFPMathLib/bid_functions.h"
+	#include "IntelRDFPMathLib/bid_internal.h"
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 #if BID_BIG_ENDIAN
   #define HIGH_128W 0
@@ -48,32 +49,24 @@
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-extern "C" {
-	#include "IntelRDFPMathLib/bid_conf.h"
-	#include "IntelRDFPMathLib/bid_functions.h"
-	#include "IntelRDFPMathLib/bid_internal.h"
-}
-
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
 /// IDEC Rounding Mode
 typedef enum IDEC_RoundingMode {
-	IDEC_nearesteven = 0,
-	IDEC_downward    = 1,
+	IDEC_nearesteven	= 0,
+	IDEC_downward		= 1,
 	IDEC_upward			= 2,
-	IDEC_towardzero	= 3,
-	IDEC_nearestaway = 4,
+	IDEC_towardzero		= 3,
+	IDEC_nearestaway	= 4,
 	IDEC_dflround		= 5
 };
 
 /// IDEC Exception Flags
 typedef enum IDEC_BitFlag {
-	IDEC_allflagsclear = 0x00,
-	IDEC_invalid			= 0x01,
+	IDEC_allflagsclear	= 0x00,
+	IDEC_invalid		= 0x01,
 	IDEC_zerodivide		= 0x04,
 	IDEC_overflow		= 0x08,
 	IDEC_underflow		= 0x10,
-	IDEC_inexact			= 0x20
+	IDEC_inexact		= 0x20
 };
 
 static unsigned int IDEC_Flag = (IDEC_zerodivide|IDEC_overflow);
@@ -309,7 +302,7 @@ UCLASS(ClassGroup = Synaptech, Category = "Synaptech")
 class MONEYTALKS_API UMT : public UObject {
 	GENERATED_UCLASS_BODY()
 public:
-	/// Currency Symbols.
+	/// Currency Symbols
 	UPROPERTY(Category = "DATA|Currencies", EditDefaultsOnly)
 	const UDataTable* Currency;
 };
@@ -516,10 +509,11 @@ const static EDEC_ISO4217 FISOHash(const FString &Code) {
 }
 
 const static FString FGetCurrencySymbol(const FString &Currency) {
-	const auto &MT = GetMutableDefault<UMT>();
+	const auto &MT = GetDefault<UMT>();
 	//
 	FString CUR = Currency.Replace(TEXT(" "),TEXT(""),ESearchCase::IgnoreCase);
 	if (CUR.IsValidIndex(3)) {CUR = FStringCutAt(CUR,3);}
+	//
 	FString SYB = FCurrencySymbol(MT->Currency,*CUR,177);
 	if (SYB.Len()>0) {return SYB;} return CUR;
 }
@@ -527,9 +521,10 @@ const static FString FGetCurrencySymbol(const FString &Currency) {
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /// FDecimal
 
-/// {S}: Decimal Property
-/// Use this data format to store decimal values.
-/// Maximum Value: -999 Septillion up to 999 Septillion (10^24) (29 Digits).
+/* Decimal Property.
+ Use this data format to store decimal numbers.
+ Maximum Value: -999 Septillion up to 999 Septillion (10^24) (29 Digits). */
+
 USTRUCT(BlueprintType)
 struct MONEYTALKS_API FDecimal {
 	GENERATED_USTRUCT_BODY()
@@ -537,8 +532,7 @@ private:
 	/// 128 Bits Storage.
 	BID_UINT128 Internal;
 public:
-	////////////////////////////////////////
-	/// Accessors
+	/// :: Accessors ::
 	//
 	double  ToDouble()  const;
 	uint32  ToUInt32()  const;
@@ -564,86 +558,85 @@ public:
 	@ Integral: Symbol used to split integral groups.
 	@ Fractional: Symbol used to split the monetary fractions.
 	Note: ISO Currency Codes may return Unicode symbols. */
-	FText ToCurrency(const EDEC_DisplayFormat &Culture = EDEC_DisplayFormat::PrefixNoSpace, const FString &Currency = TEXT(""), const FString &Integral = TEXT("."), const FString &Fractional = TEXT(","));
+	FText ToCurrency(const EDEC_DisplayFormat &Culture = EDEC_DisplayFormat::PrefixNoSpace, const FString &Currency = TEXT(""), const FString &Integral = TEXT(","), const FString &Fractional = TEXT("."));
 	//
-	/** Returns Decimal Percent of this Decimal. Equation:
+	/** Returns Decimal Percent of this Decimal:
 	@ X = This.
 	@ P% = Y / 100
 	@ Y = P% * X
 	@ Return Y */
 	FText GetValueOfPercentage(const FDecimal &Percentage);
 	//
-	/** Returns Percentage between Value and this Decimal. Equation:
+	/** Returns Percentage between Value and this Decimal:
 	@ X = This.
 	@ P% = Y / X
 	@ Return P% * 100
 	Note: Will fail when Y > Max Int32. */
 	FText GetPercentageOfValue(const FDecimal &Value);
 	//
-	/** Returns Decimal Percent of this Decimal. Equation:
+	/** Returns Decimal Percent of this Decimal:
 	@ X = This.
 	@ P% = Y / 100
 	@ Y = P% * X
 	@ Return Y */
 	FDecimal GetPercentage(const FDecimal &Percentage);
+public:
+	/// :: Constructors ::
 	//
-	////////////////////////////////////////
-	/// Constructors
-	//
-	FDecimal::FDecimal() {
+	FDecimal() {
 		Internal = BID_UINT128();
-	}
+	}///
 	//
-	FDecimal::FDecimal(const FDecimal &D) {
+	FDecimal(const FDecimal &D) {
 		Internal = D.Internal;
-	}
+	}///
 	//
-	FDecimal::FDecimal(const float F) {
+	FDecimal(const float F) {
 		Internal = binary32_to_bid128(F,IDEC_Mode,(_IDEC_flags*)&IDEC_Flag);
-	}
+	}///
 	//
-	FDecimal::FDecimal(const double D) {
+	FDecimal(const double D) {
 		Internal = binary64_to_bid128(D,IDEC_Mode,(_IDEC_flags*)&IDEC_Flag);
-	}
+	}///
 	//
-	FDecimal::FDecimal(const uint32 I) {
+	FDecimal(const uint32 I) {
 		Internal = bid128_from_uint32(I);
-	}
+	}///
 	//
-	FDecimal::FDecimal(const uint64 I) {
+	FDecimal(const uint64 I) {
 		Internal = bid128_from_uint64(I);
-	}
+	}///
 	//
-	FDecimal::FDecimal(const int32 I) {
+	FDecimal(const int32 I) {
 		Internal = bid128_from_int32(I);
-	}
+	}///
 	//
-	FDecimal::FDecimal(const int64 I) {
+	FDecimal(const int64 I) {
 		Internal = bid128_from_int64(I);
-	}
+	}///
 	//
-	FDecimal::FDecimal(const FString Input) {
+	FDecimal(const FString Input) {
 		FString PARSE; int32 I=0;
 		for (const auto C : Input) {
 			if (I==0 && C == TCHAR('-')) {PARSE.AppendChar(C);}
 			if (FIsNumeral(C)) {PARSE.AppendChar(C);}
 		I++;}
+		//
 		Internal = bid128_from_string(TCHAR_TO_ANSI(*PARSE),IDEC_Mode,&IDEC_Flag);
-	}
-	//
-	////////////////////////////////////////
-	/// Operators
+	}///
+public:
+	/// :: Operators ::
 	//
 	template<class T>
-	FORCEINLINE FDecimal &operator = (const T &Value) {
+	FORCEINLINE FDecimal & operator = (const T &Value) {
 		FDecimal D(Value); Internal = D.Internal; return *this;
-	}
+	}///
 	//
-	FORCEINLINE FDecimal &operator = (const FDecimal &D) {
+	FORCEINLINE FDecimal & operator = (const FDecimal &D) {
 		this->Internal = D.Internal; return *this;
-	}
+	}///
 	//
-	friend FORCEINLINE FArchive &operator << (FArchive &Ar, FDecimal &DC) {
+	friend FORCEINLINE FArchive & operator << (FArchive &Ar, FDecimal &DC) {
 		FString L, M, H;
 		DC.Unpack(L,M,H);
 		//
@@ -654,138 +647,148 @@ public:
 		if (Ar.IsLoading()) {
 			DC.Construct(L,M,H);
 		} return Ar;
-	}
+	}///
 	//
 	FORCEINLINE bool operator == (const FDecimal &DC) const {
 		int32 RET = bid128_quiet_equal(Internal,DC.GetRaw(),(_IDEC_flags*)&IDEC_Flag);
 		if (RET==0) {return true;} return false;
-	}
+	}///
 	//
 	FORCEINLINE bool operator != (const FDecimal &DC) const {
 		int32 RET = bid128_quiet_not_equal(Internal,DC.GetRaw(),(_IDEC_flags*)&IDEC_Flag);
 		if (RET==0) {return true;} return false;
-	}
+	}///
 	//
 	FORCEINLINE bool operator < (const FDecimal &DC) const {
 		int32 RET = bid128_quiet_less(Internal,DC.GetRaw(),(_IDEC_flags*)&IDEC_Flag);
 		if (RET==0) {return true;} return false;
-	}
+	}///
 	//
 	FORCEINLINE bool operator <= (const FDecimal &DC) const {
 		int32 RET = bid128_quiet_less_equal(Internal,DC.GetRaw(),(_IDEC_flags*)&IDEC_Flag);
 		if (RET==0) {return true;} return false;
-	}
+	}///
 	//
 	FORCEINLINE bool operator > (const FDecimal &DC) const {
 		int32 RET = bid128_quiet_greater(Internal,DC.GetRaw(),(_IDEC_flags*)&IDEC_Flag);
 		return (RET == 0 ? true:false);
-	}
+	}///
 	//
 	FORCEINLINE bool operator >= (const FDecimal &DC) const {
 		int32 RET = bid128_quiet_greater_equal(Internal,DC.GetRaw(),(_IDEC_flags*)&IDEC_Flag);
 		return (RET == 0 ? true:false);
-	}
+	}///
 	//
 	FORCEINLINE bool operator == (const FDecimal &DC) {
 		int32 RET = bid128_quiet_equal(Internal,DC.GetRaw(),(_IDEC_flags*)&IDEC_Flag);
 		if (RET==0) {return true;} return false;
-	}
+	}///
 	//
 	FORCEINLINE bool operator != (const FDecimal &DC) {
 		int32 RET = bid128_quiet_not_equal(Internal,DC.GetRaw(),(_IDEC_flags*)&IDEC_Flag);
 		if (RET==0) {return true;} return false;
-	}
+	}///
 	//
 	FORCEINLINE bool operator < (const FDecimal &DC) {
 		int32 RET = bid128_quiet_less(Internal,DC.GetRaw(),(_IDEC_flags*)&IDEC_Flag);
 		if (RET==0) {return true;} return false;
-	}
+	}///
 	//
 	FORCEINLINE bool operator <= (const FDecimal &DC) {
 		int32 RET = bid128_quiet_less_equal(Internal,DC.GetRaw(),(_IDEC_flags*)&IDEC_Flag);
 		if (RET==0) {return true;} return false;
-	}
+	}///
 	//
 	FORCEINLINE bool operator > (const FDecimal &DC) {
 		int32 RET = bid128_quiet_greater(Internal,DC.GetRaw(),(_IDEC_flags*)&IDEC_Flag);
 		return (RET == 0 ? true:false);
-	}
+	}///
 	//
 	FORCEINLINE bool operator >= (const FDecimal &DC) {
 		int32 RET = bid128_quiet_greater_equal(Internal,DC.GetRaw(),(_IDEC_flags*)&IDEC_Flag);
 		return (RET == 0 ? true:false);
-	}
+	}///
 	//
 	FORCEINLINE FDecimal &operator + (const FDecimal &DC) {
 		const auto &BID = bid128_add(Internal,DC.GetRaw(),IDEC_Mode,(_IDEC_flags*)&IDEC_Flag);
 		Internal = BID; return *this;
-	}
+	}///
 	//
 	FORCEINLINE FDecimal &operator - (const FDecimal &DC) {
 		const auto &BID = bid128_sub(Internal,DC.GetRaw(),IDEC_Mode,(_IDEC_flags*)&IDEC_Flag);
 		Internal = BID; return *this;
-	}
+	}///
 	//
 	FORCEINLINE FDecimal &operator * (const FDecimal &DC) {
 		const auto &BID = bid128_mul(Internal,DC.GetRaw(),IDEC_Mode,(_IDEC_flags*)&IDEC_Flag);
 		Internal = BID; return *this;
-	}
+	}///
 	//
 	FORCEINLINE FDecimal &operator / (const FDecimal &DC) {
 		const auto &BID = bid128_div(Internal,DC.GetRaw(),IDEC_Mode,(_IDEC_flags*)&IDEC_Flag);
 		Internal = BID; return *this;
-	}
+	}///
 	//
 	FORCEINLINE FDecimal &operator += (const FDecimal &DC) {
 		const auto &BID = bid128_add(Internal,DC.GetRaw(),IDEC_Mode,(_IDEC_flags *) &IDEC_Flag);
 		Internal = BID; return *this;
-	}
+	}///
 	//
 	FORCEINLINE FDecimal &operator -= (const FDecimal &DC) {
 		const auto &BID = bid128_sub(Internal,DC.GetRaw(),IDEC_Mode,(_IDEC_flags*)&IDEC_Flag);
 		Internal = BID; return *this;
-	}
+	}///
 	//
 	FORCEINLINE FDecimal &operator *= (const FDecimal &DC) {
 		const auto &BID = bid128_mul(Internal,DC.GetRaw(),IDEC_Mode,(_IDEC_flags*)&IDEC_Flag);
 		Internal = BID; return *this;
-	}
+	}///
 	//
 	FORCEINLINE FDecimal &operator /= (const FDecimal &DC) {
 		const auto &BID = bid128_div(Internal,DC.GetRaw(),IDEC_Mode,(_IDEC_flags*)&IDEC_Flag);
 		Internal = BID; return *this;
-	}
+	}///
 	//
 	FORCEINLINE FDecimal &operator ++ () {
 		BID_UINT128 B;
+		//
 		B.w[HIGH_128W] = 0x3040000000000000ull; 
 		B.w[LOW_128W] = 0x0000000000000001ull;
+		//
 		Internal = bid128_add(Internal,B,IDEC_Mode,(_IDEC_flags*)&IDEC_Flag);
+		//
 		return *this;
-	}
+	}///
 	//
 	FORCEINLINE FDecimal &operator -- () {
 		BID_UINT128 B;
+		//
 		B.w[HIGH_128W] = 0x3040000000000000ull; 
 		B.w[LOW_128W] = 0x0000000000000001ull;
+		//
 		Internal = bid128_sub(Internal,B,IDEC_Mode,(_IDEC_flags*)&IDEC_Flag);
+		//
 		return *this;
-	}
+	}///
 	//
 	FORCEINLINE FDecimal &operator ++ (int32 I) {
 		return ++(*this);
-	}
+	}///
 	//
 	FORCEINLINE FDecimal &operator -- (int32 I) {
 		return --(*this);
-	}
+	}///
 	//
-	////////////////////////////////////////
-	/// Methods
+	//
+	friend FORCEINLINE uint32 GetTypeHash(const FDecimal &DC) {
+		return FCrc::MemCrc32(&DC,sizeof(FDecimal));
+	}///
+public:
+	/// :: Utility ::
 	//
 	BID_UINT128 GetRaw() const {return Internal;}
-	void SetRaw(const BID_UINT128 &BID) {Internal = BID;}
 	//
+	void SetRaw(const BID_UINT128 &BID) {Internal = BID;}
 	void Construct(FString Low, FString Mid, FString High);
 	void Unpack(FString &Low, FString &Mid, FString &High);
 };

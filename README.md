@@ -1,27 +1,14 @@
 # MONEYTALKS PLUGIN -- UNREAL ENGINE 4
 
-* This Plugin implements for you accurate data types to represent Decimals and Money values compatible with the Unreal Engine environment.
+* This Plugin implements data types to represent Decimals and Money values compatible with the Unreal Engine environment.
 * All Currency types introduced are IEEE 754 compliant, C++ Classes to represent accurate world currencies defined by ISO 4217.
-* The FDecimal type can store up to 10^24 (29 signed digits): 99.999.999.999.999.999.999.999.999.999;
-* The FDecimal type can be used on both C++ and Blueprint objects and actors.
-* Replication and Serialization are handled by converting from Decimal to a subset of TCHAR* packs to maintain absolute precision.
-* The FDecimal type introduced is optionally compatible with the FSafe Structs from the SCUE4 Anti-Cheat system:
-  https://www.unrealengine.com/marketplace/scue4-anti-cheat-solution
+* The FDecimal type can store up to 10^24 (29 signed digits): 99,999,999,999,999,999,999,999,999,999;
+* The FDecimal struct can be used by both C++ and Blueprint objects and actors in Unreal.
+
+* Replication and Serialization are handled by converting from Decimal to a subset of TCHAR* packs to maintain precision.
 * Implementation is based on Intel RDFP Math Library: Copyright(C) 2011, Intel Corporation. All rights reserved.
 
 
-## Why not use Float or Double to store in-game currency?
-
-* Because floats and doubles cannot accurately represent the 'Base 10' multiples used for money representation.
-  The problem with floats is that the majority of money-like numbers don't have exact representation as integer times power of two.
-  Representing money as a double or float will probably look good at first as the software rounds off the tiny errors, but as you perform
-  more additions, subtractions, multiplications, divisions on inexact numbers, you'll lose more and more precision as the errors add up.
-  This makes floats and doubles inadequate for dealing with money values, where perfect accuracy for multiples of Base 10 is required.
-  While using Int32 or Int64 you are limited by size and cannot accurately represent real-world monetary numbers.
-  The FDecimal have large precision of 128 Bits to guarantee your players will not lose any in-game currency during regular transactions.
-  This is invaluable for games where the player must be able to store large amounts of money, such as RPG tiles.
-
-  
 ## Why Intel's Decimal Floating-Point Math Library?
 
 * Decimal floating-point operations were a necessity from the beginnings of the modern age of computing.
@@ -39,7 +26,7 @@
   attempts to resolve such issues by defining all the rules for decimal floating-point arithmetic in a way that can be adopted and
   implemented on all computing systems in software, hardware, or a combination of the two.
   Intel's implementation will run on any platform based on Linux™, Windows™, HP-UX™, Solaris™, or OSX™.
-  
+
 
 ### Example Usage:
 

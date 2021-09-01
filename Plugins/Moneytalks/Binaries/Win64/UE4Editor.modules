@@ -1,0 +1,8 @@
+{
+	"BuildId": "17155196",
+	"Modules": 
+	{
+		"EdMoneytalks": "UE4Editor-EdMoneytalks.dll",
+		"Moneytalks": "UE4Editor-Moneytalks.dll"
+	}
+}

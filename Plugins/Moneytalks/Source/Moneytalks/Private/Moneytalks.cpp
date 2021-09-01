@@ -3,30 +3,23 @@
 //////////////////////////////////////////////////////////////
 //		Copyright 2016 (C) Bruno Xavier B. Leite			//
 //////////////////////////////////////////////////////////////
-/*
-	BY EXECUTING, READING, EDITING, COPYING OR KEEPING FILES FROM THIS SOFTWARE SOURCE CODE,
-	YOU AGREE TO THE FOLLOWING TERMS IN ADDITION TO EPIC GAMES MARKETPLACE EULA:
-	- YOU HAVE READ AND AGREE TO EPIC GAMES TERMS: https://publish.unrealengine.com/faq
-	- YOU AGREE DEVELOPER RESERVES ALL RIGHTS TO THE SOFTWARE PROVIDED, GRANTED BY LAW.
-	- YOU AGREE YOU'LL NOT CREATE OR PUBLISH DERIVATIVE SOFTWARE TO THE MARKETPLACE.
-	- YOU AGREE DEVELOPER WILL NOT PROVIDE SOFTWARE OUTSIDE MARKETPLACE ENVIRONMENT.
-	- YOU AGREE DEVELOPER WILL NOT PROVIDE PAID OR EXCLUSIVE SUPPORT SERVICES.
-	- YOU AGREE DEVELOPER PROVIDED SUPPORT CHANNELS, ARE UNDER HIS SOLE DISCRETION.
-*/
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-#include "MoneytalksPrivatePCH.h"
 #include "Moneytalks.h"
+#include "Moneytalks_Shared.h"
+
 #include <sstream>
 #include <string>
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-/// FDecimal Constructors
 
 UMT::UMT(const FObjectInitializer& OBJ) : Super(OBJ) {
-		static ConstructorHelpers::FObjectFinder<UDataTable>DTC(*FString::Printf(TEXT("/%s/%s"),PLUGIN_NAME,TEXT("Data/CurrencySymbols.CurrencySymbols")));
-		if (DTC.Succeeded()) {Currency = DTC.Object;}
+	static ConstructorHelpers::FObjectFinder<UDataTable>DTC(*FString::Printf(TEXT("/%s/%s"),CASH_PLUGIN_NAME,TEXT("Data/CurrencySymbols.CurrencySymbols")));
+	//
+	if (DTC.Succeeded()) {Currency = DTC.Object;}
 }
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 float FDecimal::ToFloat() const {
 	return bid128_to_binary32(Internal,IDEC_nearesteven,(_IDEC_flags*)&IDEC_Flag);
@@ -178,7 +171,8 @@ FText FDecimal::ToCurrency(const EDEC_DisplayFormat &Culture, const FString &Cur
 		I++; PARSE.Append(&C,1);
 		if (I>2) {
 			PARSE.Append(*Integral,1);
-	I=0;}}
+		I=0;}
+	}///
 	//
 	PARSE = PARSE.Reverse();
 	PARSE.Append(Fractional+TEXT("00"));
@@ -202,6 +196,7 @@ FText FDecimal::GetValueOfPercentage(const FDecimal &Percentage) {
 	const auto X = (*this);
 	auto Y = Percentage;
 	auto P = Y / DEC(100);
+	//
 	Y = P * X;
 	auto R = Y.ToDouble();
 	//
@@ -213,6 +208,7 @@ FText FDecimal::GetPercentageOfValue(const FDecimal &Value) {
 	auto X = (*this);
 	auto Y = Value;
 	auto P = Y / X;
+	//
 	P = P * DEC(100);
 	auto R = P.ToDouble();
 	//
@@ -223,22 +219,23 @@ FDecimal FDecimal::GetPercentage(const FDecimal &Percentage) {
 	if (Percentage<=DEC(0)) {return DEC(0);}
 	//
 	const auto X = (*this);
+	//
 	auto Y = Percentage;
 	auto P = Y / DEC(100);
+	//
 	Y = P * X;
 	//
 	return Y;
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-/// FDecimal Methods
 
 void FDecimal::Construct(FString Low, FString Mid, FString High) {
 	std::string A, B, C, X;
 	//
-	A =  TCHAR_TO_ANSI(*Low);
-	B =  TCHAR_TO_ANSI(*Mid);
-	C =  TCHAR_TO_ANSI(*High);
+	A = TCHAR_TO_ANSI(*Low);
+	B = TCHAR_TO_ANSI(*Mid);
+	C = TCHAR_TO_ANSI(*High);
 	//
 	if (Low!=NOTEXT) {X=A;}
 	if (Mid!=NOTEXT) {X+=B;}
@@ -249,9 +246,10 @@ void FDecimal::Construct(FString Low, FString Mid, FString High) {
 
 void FDecimal::Unpack(FString &Low, FString &Mid, FString &High) {
 	FString S =  ToString();
-	FString A, B, C;
 	//
-	int32 I=0;
+	FString A, B, C;
+	int32 I = 0;
+	//
 	for (const auto CH : S) {
 		if (I<10) {A.Append(&CH,1);}
 		if (I>=10&&I<20) {B.Append(&CH,1);}
@@ -260,7 +258,7 @@ void FDecimal::Unpack(FString &Low, FString &Mid, FString &High) {
 	//
 	Low	= *A;
 	Mid	= *B;
-	High	= *C;
+	High = *C;
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

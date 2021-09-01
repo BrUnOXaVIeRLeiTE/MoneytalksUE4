@@ -1,35 +1,34 @@
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////
-//		Copyright 2016 (C) Bruno Xavier B. Leite			//
+//		Copyright 2021 (C) Bruno Xavier B. Leite
 //////////////////////////////////////////////////////////////
-/*
-	BY EXECUTING, READING, EDITING, COPYING OR KEEPING FILES FROM THIS SOFTWARE SOURCE CODE,
-	YOU AGREE TO THE FOLLOWING TERMS IN ADDITION TO EPIC GAMES MARKETPLACE EULA:
-	- YOU HAVE READ AND AGREE TO EPIC GAMES TERMS: https://publish.unrealengine.com/faq
-	- YOU AGREE DEVELOPER RESERVES ALL RIGHTS TO THE SOFTWARE PROVIDED, GRANTED BY LAW.
-	- YOU AGREE YOU'LL NOT CREATE OR PUBLISH DERIVATIVE SOFTWARE TO THE MARKETPLACE.
-	- YOU AGREE DEVELOPER WILL NOT PROVIDE SOFTWARE OUTSIDE MARKETPLACE ENVIRONMENT.
-	- YOU AGREE DEVELOPER WILL NOT PROVIDE PAID OR EXCLUSIVE SUPPORT SERVICES.
-	- YOU AGREE DEVELOPER PROVIDED SUPPORT CHANNELS, ARE UNDER HIS SOLE DISCRETION.
-*/
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 #include "Moneytalks.h"
+#include "Runtime/Engine/Classes/Kismet/BlueprintFunctionLibrary.h"
+
 #include "DECLibrary.generated.h"
 
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 UCLASS()
 class MONEYTALKS_API UDECLibrary : public UBlueprintFunctionLibrary {
 	GENERATED_BODY()
 public:
-	
-	////////////////////////////////////////////////////////////
-	/// Accessors
-	
-	UFUNCTION(BlueprintCallable, Category = "Variables|Decimal")
-	static FDecimal MakeLiteralDecimal(int32 Value);
+	/// :: Constructors ::
+
+	UFUNCTION(BlueprintPure, Category = "Variables|Decimal", meta = (DisplayName = "Make Decimal (Integer)"))
+	static FDecimal MakeDecimal_Int32(int32 Value);
+
+	UFUNCTION(BlueprintPure, Category = "Variables|Decimal", meta = (DisplayName = "Make Decimal (Integer 64)"))
+	static FDecimal MakeDecimal_Int64(int64 Value);
+
+	UFUNCTION(BlueprintPure, Category = "Variables|Decimal", meta = (DisplayName = "Make Decimal (String)"))
+	static FDecimal MakeDecimal_String(FString Value);
+
+public:
+	/// :: Accessors ::
 
 	UFUNCTION(BlueprintCallable, Category = "Variables|Decimal")
 	static FString ToString(UPARAM(ref)FDecimal &Decimal);
@@ -37,7 +36,7 @@ public:
 	/** Converts this Decimal number to a formatted number string.
 	@ Integral: Symbol used to split integral groups. */
 	UFUNCTION(BlueprintCallable, Category = "Variables|Decimal")
-	static FString ToDecorated(UPARAM(ref)FDecimal &Decimal, const FString &Integral = TEXT("."));
+	static FString ToDecorated(UPARAM(ref)FDecimal &Decimal, const FString &Integral = TEXT(","));
 
 	/**	Converts this Decimal number to a FText representation:
 	@ Currency: ISO-4217 Currency Code or any Prefix String.
@@ -47,7 +46,7 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Variables|Decimal")
 	static FText ToCurrency(UPARAM(ref)FDecimal &Decimal, const EDEC_DisplayFormat &Culture = EDEC_DisplayFormat::PrefixNoSpace, const FString &Currency = TEXT(""), const FString &Integral = TEXT("."), const FString &Fractional = TEXT(","));
 
-	/** Returns Decimal Percent of this Decimal. Equation:
+	/** Returns Decimal Percent of this Decimal:
 	@ X = This.
 	@ P% = Y / 100
 	@ Y = P% * X
@@ -55,7 +54,7 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Variables|Decimal")
 	static FText GetValueOfPercentage(UPARAM(ref)FDecimal &Decimal, const FDecimal &Percentage);
 
-	/** Returns Percentage between Value and this Decimal. Equation:
+	/** Returns Percentage between Value and this Decimal:
 	@ X = This.
 	@ P% = Y / X
 	@ Return P% * 100
@@ -63,7 +62,7 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Variables|Decimal")
 	static FText GetPercentageOfValue(UPARAM(ref)FDecimal &Decimal, const FDecimal &Value);
 
-	/** Returns Decimal Percent of this Decimal. Equation:
+	/** Returns Decimal Percent of this Decimal.:
 	@ X = This.
 	@ P% = Y / 100
 	@ Y = P% * X
@@ -71,8 +70,8 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Variables|Decimal")
 	static FDecimal GetPercentage(UPARAM(ref)FDecimal &Decimal, const FDecimal &Percentage, int32 &Integer);
 
-	////////////////////////////////////////////////////////////
-	/// Operators
+public:
+	/// :: Operators ::
 
 	/// FDecimal -> FDecimal
 
@@ -136,11 +135,16 @@ public:
 	UFUNCTION(BlueprintPure, Category = "Variables|Decimal", meta = (DisplayName = "-= (Decimal)", CompactNodeTitle = "-=", Keywords = "Get Decimal MINUS EQUAL -="))
 	static FDecimal DEC_GetDecimalMinusEqualDEC(UPARAM(ref)FDecimal &DEC, UPARAM(ref)FDecimal &D);
 
-	/// FDecimal Conversions
+public:
+	/// :: FDecimal Conversions ::
 
 	/** Decimal to Integer */
 	UFUNCTION(BlueprintPure, Category = "Variables|Decimal", meta = (DisplayName = "To Int", CompactNodeTitle = "Dec to Int", Keywords = "Decimal Int"))
 	static int32 DEC_DecimalToInt(UPARAM(ref)FDecimal &DEC);
+
+	/** Decimal to Int64 */
+	UFUNCTION(BlueprintPure, Category = "Variables|Decimal", meta = (DisplayName = "To Int64", CompactNodeTitle = "Dec to Int64", Keywords = "Decimal Int"))
+	static int64 DEC_DecimalToInt64(UPARAM(ref)FDecimal &DEC);
 
 	/** Decimal to Float */
 	UFUNCTION(BlueprintPure, Category = "Variables|Decimal", meta = (DisplayName = "To Float", CompactNodeTitle = "Dec to Float", Keywords = "Decimal Float"))
@@ -148,4 +152,5 @@ public:
 
 };
 
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
