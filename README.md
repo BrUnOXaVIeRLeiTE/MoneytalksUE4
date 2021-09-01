@@ -9,26 +9,16 @@
 * Implementation is based on Intel RDFP Math Library: Copyright(C) 2011, Intel Corporation. All rights reserved.
 
 
-## Why Intel's Decimal Floating-Point Math Library?
 
-* Decimal floating-point operations were a necessity from the beginnings of the modern age of computing.
-  However, the lack of a good standard for decimal computations has led to the existence of numerous proprietary software packages for
-  decimal or decimal-like computation, most based on fixed-point decimal types, and each with its own characteristics and capabilities.
-  A turning point for decimal computation is the revision of the IEEE Standard 754-2008 for Binary Floating-Point Arithmetic
-  as an important addition to it is the definition of decimal floating-point arithmetic. The primary motivation was that decimal
-  arithmetic makes numerical calculations more human-friendly. Results will be as people expect them, identical to what would be obtained
-  using pencil and paper. Decimal arithmetic also provides a robust, reliable framework for financial applications that are often subject
-  to legal requirements concerning rounding and precision of the results in the areas of banking, telephone billing, tax calculation,
-  currency conversion, insurance, or accounting in general. The binary floating-point arithmetic that computers use does not always
-  satisfy the existing accuracy requirements. For example, (7.00 / 10000.0) * 10000.0 calculated in single precision is 6.9999997504,
-  and not 7.00. Similar examples can be found for double precision, or any other binary floating-point format. The underlying cause is
-  that most decimal fractions, such as 0.1, cannot be represented exactly in binary floating-point format. The IEEE 754 standard proposal
-  attempts to resolve such issues by defining all the rules for decimal floating-point arithmetic in a way that can be adopted and
-  implemented on all computing systems in software, hardware, or a combination of the two.
-  Intel's implementation will run on any platform based on Linux™, Windows™, HP-UX™, Solaris™, or OSX™.
+## How to Use (Blueprints):
+
+* Add new Property to Blueprint.
+* Change Property type to 'Decimal'.
+* Use operator nodes and operators from category 'Variables | Decimal'.
 
 
-### Example Usage:
+
+## C++ Example:
 
 ```csharp
 PublicDependencyModuleNames.AddRange(new string[] {"Moneytalks","Core","CoreUObject","Engine","InputCore"});
